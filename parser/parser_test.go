@@ -286,7 +286,6 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			t.Errorf("expected=%q, got=%q", tt.expected, actual)
 		}
 	}
-
 }
 
 func checkParserErrors(t *testing.T, p *Parser) {
