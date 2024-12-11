@@ -22,14 +22,15 @@ const (
 )
 
 var precedences = map[token.TokenType]int{
-	token.EQ:     EQUALS,
-	token.NOT_EQ: EQUALS,
-	token.LT:     LESSGREATER,
-	token.GT:     LESSGREATER,
-	token.PLUS:   SUM,
-	token.MINUS:  SUM,
-	token.SLASH:  PRODUCT,
-	token.STAR:   PRODUCT,
+	token.EQ:      EQUALS,
+	token.NOT_EQ:  EQUALS,
+	token.LT:      LESSGREATER,
+	token.GT:      LESSGREATER,
+	token.PLUS:    SUM,
+	token.MINUS:   SUM,
+	token.SLASH:   PRODUCT,
+	token.STAR:    PRODUCT,
+	token.L_PAREN: CALL,
 }
 
 type (
@@ -55,6 +56,11 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
+
+	p.registerPrefix(token.TRUE, p.parseBoolean)
+	p.registerPrefix(token.FALSE, p.parseBoolean)
+
+	p.registerPrefix(token.L_PAREN, p.parseGroupedExpression)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
@@ -93,6 +99,18 @@ func (p *Parser) ParseProgram() *ast.Program {
 	return program
 }
 
+func (p *Parser) parseGroupedExpression() ast.Expression {
+	p.nextToken()
+
+	exp := p.parseExpression(LOWEST)
+
+	if !p.expectPeek(token.R_PAREN) {
+		return nil
+	}
+
+	return exp
+}
+
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.currToken.Type {
 	case token.LET:
@@ -117,7 +135,10 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		return nil
 	}
 
-	// TODO: Skip expressions until we encounter a semicolon
+	p.nextToken()
+
+	stmt.Value = p.parseExpression(LOWEST)
+
 	for !p.currTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
@@ -130,7 +151,8 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	p.nextToken()
 
-	// TODO: skip expressions until we encounter a semicolon
+	stmt.ReturnValue = p.parseExpression(LOWEST)
+
 	for !p.currTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
@@ -225,6 +247,10 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expression.Right = p.parseExpression(precedence)
 
 	return expression
+}
+
+func (p *Parser) parseBoolean() ast.Expression {
+	return &ast.Boolean{Token: p.currToken, Value: p.currTokenIs(token.TRUE)}
 }
 
 func (p *Parser) currTokenIs(t token.TokenType) bool {
