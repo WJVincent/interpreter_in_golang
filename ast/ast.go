@@ -24,50 +24,6 @@ type Program struct {
 	Statements []Statement
 }
 
-type LetStatement struct {
-	Token token.Token // token.LET
-	Name  *Identifier
-	Value Expression
-}
-
-type ReturnStatement struct {
-	Token       token.Token // token.RETURN
-	ReturnValue Expression
-}
-
-type ExpressionStatement struct {
-	Token      token.Token // the first token in the expression
-	Expression Expression
-}
-
-type Identifier struct {
-	Token token.Token // token.IDENT
-	Value string
-}
-
-type IntegerLiteral struct {
-	Token token.Token
-	Value int64
-}
-
-type PrefixExpression struct {
-	Token    token.Token // the prefix token, e.g. !
-	Operator string
-	Right    Expression
-}
-
-type InfixExpression struct {
-	Token    token.Token // the operator token, e.g. +
-	Left     Expression
-	Operator string
-	Right    Expression
-}
-
-type Boolean struct {
-	Token token.Token
-	Value bool
-}
-
 func (p *Program) TokenLiteral() string {
 	if len(p.Statements) > 0 {
 		return p.Statements[0].TokenLiteral()
@@ -84,6 +40,12 @@ func (p *Program) String() string {
 	}
 
 	return out.String()
+}
+
+type LetStatement struct {
+	Token token.Token // token.LET
+	Name  *Identifier
+	Value Expression
 }
 
 func (ls *LetStatement) statementNode() {}
@@ -106,11 +68,10 @@ func (ls *LetStatement) String() string {
 	return out.String()
 }
 
-func (i *Identifier) expressionNode() {}
-
-func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
-
-func (i *Identifier) String() string { return i.Value }
+type ReturnStatement struct {
+	Token       token.Token // token.RETURN
+	ReturnValue Expression
+}
 
 func (rs *ReturnStatement) statementNode() {}
 
@@ -130,6 +91,11 @@ func (rs *ReturnStatement) String() string {
 	return out.String()
 }
 
+type ExpressionStatement struct {
+	Token      token.Token // the first token in the expression
+	Expression Expression
+}
+
 func (es *ExpressionStatement) statementNode() {}
 
 func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
@@ -142,11 +108,33 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
+type Identifier struct {
+	Token token.Token // token.IDENT
+	Value string
+}
+
+func (i *Identifier) expressionNode() {}
+
+func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+
+func (i *Identifier) String() string { return i.Value }
+
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
 func (il *IntegerLiteral) expressionNode() {}
 
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 
 func (il *IntegerLiteral) String() string { return il.Token.Literal }
+
+type PrefixExpression struct {
+	Token    token.Token // the prefix token, e.g. !
+	Operator string
+	Right    Expression
+}
 
 func (pe *PrefixExpression) expressionNode() {}
 
@@ -163,6 +151,13 @@ func (pe *PrefixExpression) String() string {
 	return out.String()
 }
 
+type InfixExpression struct {
+	Token    token.Token // the operator token, e.g. +
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
 func (ie *InfixExpression) expressionNode() {}
 
 func (ie *InfixExpression) TokenLiteral() string { return ie.Token.Literal }
@@ -177,6 +172,11 @@ func (ie *InfixExpression) String() string {
 	out.WriteString(")")
 
 	return out.String()
+}
+
+type Boolean struct {
+	Token token.Token
+	Value bool
 }
 
 func (b *Boolean) expressionNode() {}
