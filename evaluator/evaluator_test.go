@@ -264,12 +264,11 @@ func TestFunctionApplication(t *testing.T) {
 }
 
 func TestClosures(t *testing.T) {
-	input := `
-let newAdder = fn(x) {
-fn(y) { x + y };
+	input := `let newadder = fn(x) {
+  fn(y) { x + y };
 };
-let addTwo = newAdder(2);
-addTwo(2);`
+let addtwo = newadder(2);
+addtwo(2);`
 	testIntegerObject(t, testEval(input), 4)
 }
 
