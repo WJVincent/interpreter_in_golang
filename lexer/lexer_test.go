@@ -25,6 +25,8 @@ func TestNextToken(t *testing.T) {
 
 	10 == 10
 	10 != 9
+
+        let camelCase = 0;
 	`
 
 	tests := []struct {
@@ -119,6 +121,13 @@ func TestNextToken(t *testing.T) {
 		{token.INT, "10"},
 		{token.NOT_EQ, "!="},
 		{token.INT, "9"},
+
+		//expr 10
+		{token.LET, "let"},
+		{token.IDENT, "camelCase"},
+		{token.ASSIGN, "="},
+		{token.INT, "0"},
+		{token.SEMICOLON, ";"},
 
 		// EOF
 		{token.EOF, ""},
