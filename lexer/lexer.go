@@ -26,7 +26,6 @@ func (l *Lexer) readChar() {
 	l.readPosition += 1
 }
 
-
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
@@ -59,7 +58,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '-':
 		tok = newToken(token.MINUS, l.ch)
 	case '!':
-		if l.peekChar() == '='{
+		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
 			literal := string(ch) + string(l.ch)
@@ -131,7 +130,7 @@ func isDigit(ch byte) bool {
 }
 
 func (l *Lexer) peekChar() byte {
-	if l.readPosition >= len(l.input){
+	if l.readPosition >= len(l.input) {
 		return 0
 	} else {
 		return l.input[l.readPosition]
